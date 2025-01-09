@@ -1,13 +1,15 @@
 import React, { useState } from "react";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import DialogActions from "@mui/material/DialogActions";
-import Button from "@mui/material/Button";
-import { FormControl } from "@mui/material";
-import {InputLabel} from "@mui/material";
-import {Select} from "@mui/material";
-import {MenuItem} from "@mui/material";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+} from "@mui/material";
 import First from "./First";
 
 const KanbanTemplate = ({
@@ -22,13 +24,12 @@ const KanbanTemplate = ({
     QA: "#d9534f",
     Complete: "#5cb85c",
   };
+
   const [openDialog, setOpenDialog] = useState(false);
-  const [hover, setHover] = useState(true);
-  const [isHover, setIsHover] = useState(true);
   const [selectedTask, setSelectedTask] = useState(null);
 
   const onTaskClick = (task) => {
-    setSelectedTask(task);
+    setSelectedTask({ ...task });
     setOpenDialog(true);
   };
 
@@ -36,16 +37,19 @@ const KanbanTemplate = ({
     setOpenDialog(false);
     setSelectedTask(null);
   };
-  const handlSaveDialog = () => {
-    setIsHover(true);
-    setOpenDialog(false);
-  };
 
   const handleStatusChange = (event) => {
     const updatedTask = { ...selectedTask, status: event.target.value };
     setSelectedTask(updatedTask);
-    updateTask(updatedTask);
   };
+const handleSaveDialog = () => {
+  console.log('Selected Task Before Save:', selectedTask);
+  if (selectedTask) {
+    updateTask(selectedTask);
+  }
+  setOpenDialog(false);
+  setSelectedTask(null);
+};
 
   return (
     <div style={{ backgroundColor: "lightgray" }}>
@@ -54,6 +58,7 @@ const KanbanTemplate = ({
           width: "100%",
           borderCollapse: "collapse",
           tableLayout: "fixed",
+          height: "88.5vh",
         }}
       >
         <thead>
@@ -72,7 +77,7 @@ const KanbanTemplate = ({
             ))}
           </tr>
         </thead>
-        <tbody style={{ height: "83.6vh" }}>
+        <tbody>
           <tr>
             {mappingHeader.map((td, index) => (
               <td
@@ -92,16 +97,27 @@ const KanbanTemplate = ({
                       style={{
                         marginBottom: "8px",
                         border: "2px solid gray",
-                        borderRadius: "30px",
+                        borderRadius: "5px",
                         cursor: "pointer",
                         color: "white",
                         backgroundColor: statusColors[task.status],
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        wordWrap: "break-word",
+                        height: "200px",
                       }}
                       onClick={() => onTaskClick(task)}
                     >
                       <First assignee={task.assignee} />
-                      <p>Assignee: {task.assignee}</p>
-                      <p>Reporter: {task.reporter}</p>
+                      <h4
+                        style={{
+                          margin: 0,
+                          textAlign: "center",
+                          paddingTop: "30px",
+                        }}
+                      >
+                        Task: {task.task}
+                      </h4>
                     </div>
                   ))}
               </td>
@@ -109,101 +125,75 @@ const KanbanTemplate = ({
           </tr>
         </tbody>
       </table>
-      <Dialog open={openDialog} sx={{}} onClose={handleCloseDialog}>
-        <div style={{ background: "lightcoral", width: "400px" }}>
-          <DialogTitle
-            style={{
-              textAlign: "center",
-              background: "lightblue",
-              paddingBottom: "20px",
-              position: "relative",
-              top: "5px",
-            }}
-          >
-            Task Details
-            <img
-              src="https://img.icons8.com/?size=48&id=20750&format=png"
-              alt="GIF"
-              style={{
-                position: "relative",
-                width: "40px",
-                height: "40px",
-                borderRadius: "50%",
-                border: "2px solid white",
-                top: "10px",
-                left: "10px",
-              }}
-            />
-          </DialogTitle>
-          <DialogContent style={{ padding: "30px" }}>
-            {selectedTask && (
-              <div>
-                <FormControl fullWidth style={{ marginBottom: "16px" }}>
-                  <InputLabel id="status-label">Status</InputLabel>
-                  <Select
-                    labelId="status-label"
-                    value={selectedTask.status}
-                    onChange={handleStatusChange}
-                  >
-                    {mappingHeader.map((status) => (
-                      <MenuItem key={status} value={status}>
-                        {status}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-                <strong>Task: {selectedTask.task || "Mandatory field"}</strong>
-                <p>
-                  <strong>Description:</strong> {selectedTask.description}
-                </p>
-                <p>
-                  <strong>Assignee:</strong> {selectedTask.assignee}
-                </p>
-                <p>
-                  <strong>Reporter:</strong> {selectedTask.reporter}
-                </p>
-              </div>
-            )}
-          </DialogContent>
-          <DialogActions>
-            <Button
-              onClick={handleCloseDialog}
-              style={{
-                color: hover ? "white" : "white",
-                border: "1px solid gray",
-                background: hover ? "rgb(114, 149, 19)" : "#dc3545",
-                position: "absolute",
-                bottom: hover ? "0%" : "2.5%",
-                left: "0%",
-                transition: "all 1s ease-in-out",
-                borderRadius: hover ? "5px" : "50px",
-                Top: "20px",
-              }}
-              onMouseEnter={() => setHover(false)}
-              onMouseLeave={() => setHover(true)}
-            >
-              Close
-            </Button>
-            <Button
-              onClick={handlSaveDialog}
-              style={{
-                color: isHover ? "white" : "black",
-                border: "1px solid gray",
-                background: isHover ? "#007bff" : "#28a745",
-                position: "absolute",
-                bottom: isHover ? "0%" : "2.5%",
-                right: "0%",
-                transition: "all 1s ease-in-out",
-                borderRadius: isHover ? "5px" : "50px",
-                Top: "20px",
-              }}
-              onMouseEnter={() => setIsHover(false)}
-              onMouseLeave={() => setIsHover(true)}
-            >
-              Save
-            </Button>
-          </DialogActions>
-        </div>
+      {/* Task Details */}
+      <Dialog open={openDialog} onClose={handleCloseDialog}>
+        <DialogTitle
+          style={{
+            textAlign: "center",
+            background: "lightblue",
+            paddingBottom: "40px",
+          }}
+        >
+          Task Details
+        </DialogTitle>
+        <DialogContent style={{ padding: "30px" }}>
+          {selectedTask && (
+            <div>
+              <FormControl fullWidth style={{ marginBottom: "16px" }}>
+                <InputLabel id="status-label">Status</InputLabel>
+                <Select
+                  labelId="status-label"
+                  value={selectedTask.status}
+                  onChange={handleStatusChange}
+                >
+                  {mappingHeader.map((status) => (
+                    <MenuItem key={status} value={status}>
+                      {status}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <strong>Task: </strong>
+              <input
+                value={selectedTask.task}
+                onChange={(e) =>
+                  setSelectedTask({ ...selectedTask, task: e.target.value })
+                }
+                style={{
+                  width: "100%",
+                  padding: "8px",
+                  marginBottom: "16px",
+                }}
+              />
+              <strong>Description:</strong>
+              <textarea
+                value={selectedTask.description}
+                onChange={(e) =>
+                  setSelectedTask({
+                    ...selectedTask,
+                    description: e.target.value,
+                  })
+                }
+                style={{
+                  width: "100%",
+                  padding: "8px",
+                  marginBottom: "16px",
+                  minHeight: "80px",
+                }}
+              />
+              <p>
+                <strong>Assignee:</strong> {selectedTask.assignee}
+              </p>
+              <p>
+                <strong>Reporter:</strong> {selectedTask.reporter}
+              </p>
+            </div>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog}>Close</Button>
+          <Button onClick={handleSaveDialog}>Save</Button>
+        </DialogActions>
       </Dialog>
     </div>
   );

@@ -15,7 +15,7 @@ const First = ({ assignee, taskCount }) => {
 
   return (
     <div
-      style={{ display: "flex", justifyContent: "center", marginTop: "5px" }}
+      style={{position:'relative',top:'30%',left:'5px'}}
     >
       <div
         style={{
@@ -25,10 +25,10 @@ const First = ({ assignee, taskCount }) => {
           backgroundColor: "rgb(34, 143, 26)",
           color: "white",
           display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
           fontSize: "28px",
           fontWeight: "bold",
+          justifyContent:'center',
+          alignItems:'center'
         }}
       >
         {getInitial(assignee)}

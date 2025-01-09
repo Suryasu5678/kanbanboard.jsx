@@ -1,22 +1,78 @@
 import React, { useState } from "react";
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogTitle from "@mui/material/DialogTitle";
-import Slide from "@mui/material/Slide";
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import InputLabel from "@mui/material/InputLabel";
-import './app.css'
+import {
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  TextField,
+  Modal,
+  Typography,
+  Checkbox,
+} from "@mui/material";
+import { Slide } from "@mui/material";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
-const Header = ({ onClick, taskCount }) => {
-  const displayTaskCount =
-    taskCount > 10 ? "10+" : taskCount > 5 ? "5+" : taskCount;
+const Header = ({ filter, setFilter, onCreateTask }) => {
+  const [openDialog, setOpenDialog] = useState(false);
+  const [assignee, setAssignee] = useState("");
+  const [reporter, setReporter] = useState("");
+  const [task, setTask] = useState("");
+  const [description, setDescription] = useState("");
+
+  const [open, setOpen] = useState(false);
+  const [tempFilter, setTempFilter] = useState({ ...filter });
+
+  const handleClickOpen = () => setOpenDialog(true);
+  const handleCloseDialog = () => setOpenDialog(false);
+
+  const handleSave = () => {
+    const newTask = {
+      assignee,
+      reporter,
+      task,
+      description,
+      status: "Backlog",
+    };
+    onCreateTask(newTask); 
+    handleCloseDialog();
+    setAssignee("");
+    setReporter("");
+    setTask("");
+    setDescription("");
+  };
+
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => {
+    setOpen(false);
+    setTempFilter({ ...filter });
+  };
+
+  const handleSaveFilter = () => {
+    setFilter(tempFilter); 
+    handleClose(); 
+  };
+
+  const handleCheckboxChange = (e, category) => {
+    const { value, checked } = e.target;
+    setTempFilter((prev) => {
+      const updatedFilter = { ...prev };
+      if (checked) {
+        updatedFilter[category].push(value); 
+      } else {
+        updatedFilter[category] = updatedFilter[category].filter(
+          (item) => item !== value
+        ); 
+      }
+      return updatedFilter;
+    });
+  };
 
   return (
     <div
@@ -29,86 +85,15 @@ const Header = ({ onClick, taskCount }) => {
         justifyContent: "center",
       }}
     >
-      <Button variant="outlined" onClick={onClick}>
+      <Button variant="outlined" onClick={handleClickOpen}>
         Create New
       </Button>
 
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-        }}
-      >
-        <p
-          style={{
-            color: "white",
-            fontWeight: "bold",
-            fontSize: "18px",
-          }}
-        >
-          {displayTaskCount}
-        </p>
-        <div style={{ position: "relative", left: "200px" }}>
-          <img
-            src="https://img.icons8.com/?size=48&id=20750&format=png"
-            alt="GIF"
-            style={{
-              width: "30px",
-              height: "30px",
-              borderRadius: "50%",
-              border: "2px solid white",
-              bottom: "19px",
-              position: "absolute",
-            }}
-            onClick={onClick}
-          />
-          <p className="clickme"
-            style={{ top: "24px", position: "relative", right: "12px" ,cursor:'pointer'}}
-            onClick={onClick}
-          >
-            click me!
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default function DialogWithDropdown({ tableData }) {
-  const [open, setOpen] = useState(false);
-  const [assignee, setAssignee] = useState("");
-  const [reporter, setReporter] = useState("");
-  const [task, setTask] = useState("");
-  const [description, setDescription] = useState("");
-  const handleClickOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-
-  const handleSave = () => {
-    const newTask = {
-      assignee,
-      reporter,
-      task,
-
-      description,
-      status: "Backlog",
-    };
-    tableData(newTask);
-    console.log(handleSave);
-    handleClose();
-    setAssignee("");
-    setReporter("");
-    setTask("");
-    setDescription("");
-  };
-
-  return (
-    <React.Fragment>
-      <Header onClick={handleClickOpen} />
       <Dialog
-        open={open}
+        open={openDialog}
         TransitionComponent={Transition}
         keepMounted
-        onClose={handleClose}
+        onClose={handleCloseDialog}
       >
         <DialogTitle style={{ textAlign: "center" }}>Kanban Board</DialogTitle>
         <DialogContent>
@@ -136,25 +121,165 @@ export default function DialogWithDropdown({ tableData }) {
               <MenuItem value="Rishi">Rishi</MenuItem>
             </Select>
           </FormControl>
-          <input
-            type="text"
-            placeholder="Enter Task"
+          <TextField
+            label="Task Title"
             value={task}
             onChange={(e) => setTask(e.target.value)}
-            style={{ padding: "10px", marginBottom: "16px", width: "95%" }}
+            fullWidth
+            style={{ marginBottom: "16px" }}
           />
-          <textarea
-            placeholder="Description"
+          <TextField
+            label="Description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            style={{ padding: "10px", width: "95%" }}
+            fullWidth
+            multiline
+            rows={3}
+            style={{ marginBottom: "16px" }}
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Close</Button>
+          <Button onClick={handleCloseDialog}>Close</Button>
           <Button onClick={handleSave}>Save</Button>
         </DialogActions>
       </Dialog>
-    </React.Fragment>
+      <div style={{position:'relative',left:'25%'}}>
+        <Button
+          onClick={handleOpen}
+          sx={{ position: "relative", left: "260px",border:'1px solid green' }}
+        >
+          FILTER
+        </Button>
+        <Modal
+          open={open}
+          onClose={handleClose}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <div
+            style={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              background: "lightcoral",
+              padding: "20px",
+              boxShadow: "2px 2px 10px rgba(0, 0, 0, 0.1)",
+              borderRadius: "4px",
+            }}
+          >
+            <Typography
+              id="modal-modal-title"
+              variant="h6"
+              component="h2"
+              sx={{ color: "white" }}
+            >
+              Assignee
+            </Typography>
+            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+              <Checkbox
+                value="Niteesh"
+                checked={tempFilter.assignee.includes("Niteesh")}
+                onChange={(e) => handleCheckboxChange(e, "assignee")}
+              />
+              Niteesh
+              <Checkbox
+                value="Surya"
+                checked={tempFilter.assignee.includes("Surya")}
+                onChange={(e) => handleCheckboxChange(e, "assignee")}
+              />
+              Surya
+              <Checkbox
+                value="Karthi"
+                checked={tempFilter.assignee.includes("Karthi")}
+                onChange={(e) => handleCheckboxChange(e, "assignee")}
+              />
+              Karthi
+            </Typography>
+            <Typography
+              id="modal-modal-title"
+              variant="h6"
+              component="h2"
+              sx={{ color: "white" }}
+            >
+              Reporter
+            </Typography>
+            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+              <Checkbox
+                value="Sasi"
+                checked={tempFilter.reporter.includes("Sasi")}
+                onChange={(e) => handleCheckboxChange(e, "reporter")}
+              />
+              Sasi
+              <Checkbox
+                value="Siva"
+                checked={tempFilter.reporter.includes("Siva")}
+                onChange={(e) => handleCheckboxChange(e, "reporter")}
+              />
+              Siva
+              <Checkbox
+                value="Rishi"
+                checked={tempFilter.reporter.includes("Rishi")}
+                onChange={(e) => handleCheckboxChange(e, "reporter")}
+              />
+              Rishi
+            </Typography>
+            <Typography
+              id="modal-modal-title"
+              variant="h6"
+              component="h2"
+              sx={{ color: "white" }}
+            >
+              Status
+            </Typography>
+            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+              <Checkbox
+                value="Backlog"
+                checked={tempFilter.status.includes("Backlog")}
+                onChange={(e) => handleCheckboxChange(e, "status")}
+              />
+              Backlog
+              <Checkbox
+                value="ToDo"
+                checked={tempFilter.status.includes("ToDo")}
+                onChange={(e) => handleCheckboxChange(e, "status")}
+              />
+              ToDo
+              <Checkbox
+                value="Inprogress"
+                checked={tempFilter.status.includes("Inprogress")}
+                onChange={(e) => handleCheckboxChange(e, "status")}
+              />
+              Inprogress
+              <Checkbox
+                value="QA"
+                checked={tempFilter.status.includes("QA")}
+                onChange={(e) => handleCheckboxChange(e, "status")}
+              />
+              QA
+              <Checkbox
+                value="Complete"
+                checked={tempFilter.status.includes("Complete")}
+                onChange={(e) => handleCheckboxChange(e, "status")}
+              />
+              Complete
+            </Typography>
+            <Button
+              sx={{
+                border: "1px solid white",
+                background: "green",
+                color: "white",
+                marginTop: "20px",
+              }}
+              onClick={handleSaveFilter}
+            >
+              Save
+            </Button>
+          </div>
+        </Modal>
+      </div>
+    </div>
   );
-}
+};
+
+export default Header;
