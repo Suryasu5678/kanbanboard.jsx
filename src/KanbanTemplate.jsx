@@ -42,14 +42,14 @@ const KanbanTemplate = ({
     const updatedTask = { ...selectedTask, status: event.target.value };
     setSelectedTask(updatedTask);
   };
-const handleSaveDialog = () => {
-  console.log('Selected Task Before Save:', selectedTask);
-  if (selectedTask) {
-    updateTask(selectedTask);
-  }
-  setOpenDialog(false);
-  setSelectedTask(null);
-};
+  const handleSaveDialog = () => {
+    console.log("Selected Task Before Save:", selectedTask);
+    if (selectedTask) {
+      updateTask(selectedTask);
+    }
+    setOpenDialog(false);
+    setSelectedTask(null);
+  };
 
   return (
     <div style={{ backgroundColor: "lightgray" }}>
@@ -57,8 +57,10 @@ const handleSaveDialog = () => {
         style={{
           width: "100%",
           borderCollapse: "collapse",
-          tableLayout: "fixed",
+          tableLayout: "auto",
           height: "88.5vh",
+          maxHeight: "88.5vh",
+          overflowY: "auto",
         }}
       >
         <thead>
@@ -70,6 +72,9 @@ const handleSaveDialog = () => {
                   border: "1px solid black",
                   textAlign: "center",
                   padding: "8px",
+                  fontSize: "clamp(10px, 2vw, 16px)",
+                  backgroundColor: "lightgray",
+                  wordWrap: "break-word",
                 }}
               >
                 {th}
@@ -109,15 +114,38 @@ const handleSaveDialog = () => {
                       onClick={() => onTaskClick(task)}
                     >
                       <First assignee={task.assignee} />
-                      <h4
+                      <div
                         style={{
-                          margin: 0,
-                          textAlign: "center",
-                          paddingTop: "30px",
+                          display: "flex",
+                          flexDirection: "column", 
+                          justifyContent: "center",
+                          alignItems: "center",
+                          height: "100%",
                         }}
                       >
-                        Task: {task.task}
-                      </h4>
+                        <h4
+                          style={{
+                            margin: 0,
+                            textAlign: "center",
+                            paddingTop: "30px",
+                            fontSize: "clamp(14px, 2vw, 18px)",
+                            position: "relative",
+                          }}
+                        >
+                          Task: {task.task}
+                        </h4>
+                        <style>
+                          {`
+      @media (max-width: 600px) {
+        h4 {
+          position: absolute;
+          bottom: 20px; /* Moves the task to the bottom */
+          padding-top: 0;
+        }
+      }
+    `}
+                        </style>
+                      </div>
                     </div>
                   ))}
               </td>

@@ -19,13 +19,13 @@ import { Slide } from "@mui/material";
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
+
 const Header = ({ filter, setFilter, onCreateTask }) => {
   const [openDialog, setOpenDialog] = useState(false);
   const [assignee, setAssignee] = useState("");
   const [reporter, setReporter] = useState("");
   const [task, setTask] = useState("");
   const [description, setDescription] = useState("");
-
   const [open, setOpen] = useState(false);
   const [tempFilter, setTempFilter] = useState({ ...filter });
 
@@ -40,7 +40,7 @@ const Header = ({ filter, setFilter, onCreateTask }) => {
       description,
       status: "Backlog",
     };
-    onCreateTask(newTask); 
+    onCreateTask(newTask);
     handleCloseDialog();
     setAssignee("");
     setReporter("");
@@ -55,8 +55,8 @@ const Header = ({ filter, setFilter, onCreateTask }) => {
   };
 
   const handleSaveFilter = () => {
-    setFilter(tempFilter); 
-    handleClose(); 
+    setFilter(tempFilter);
+    handleClose();
   };
 
   const handleCheckboxChange = (e, category) => {
@@ -64,11 +64,11 @@ const Header = ({ filter, setFilter, onCreateTask }) => {
     setTempFilter((prev) => {
       const updatedFilter = { ...prev };
       if (checked) {
-        updatedFilter[category].push(value); 
+        updatedFilter[category].push(value);
       } else {
         updatedFilter[category] = updatedFilter[category].filter(
           (item) => item !== value
-        ); 
+        );
       }
       return updatedFilter;
     });
@@ -81,11 +81,21 @@ const Header = ({ filter, setFilter, onCreateTask }) => {
         background: "black",
         color: "white",
         display: "flex",
+        flexWrap: "wrap", 
         alignItems: "center",
         justifyContent: "center",
+        padding: "10px",
+        gap: "10px", 
       }}
     >
-      <Button variant="outlined" onClick={handleClickOpen}>
+      <Button
+        variant="outlined"
+        sx={{
+          fontSize: { xs: "10px", sm: "12px", md: "14px" },
+          width: { xs: "100%", sm: "auto" },
+        }}
+        onClick={handleClickOpen}
+      >
         Create New
       </Button>
 
@@ -143,141 +153,147 @@ const Header = ({ filter, setFilter, onCreateTask }) => {
           <Button onClick={handleSave}>Save</Button>
         </DialogActions>
       </Dialog>
-      <div style={{position:'relative',left:'25%'}}>
-        <Button
-          onClick={handleOpen}
-          sx={{ position: "relative", left: "260px",border:'1px solid green' }}
+
+      <Button
+        onClick={handleOpen}
+        sx={{
+          fontSize: { xs: "10px", sm: "12px", md: "14px" },
+          width: { xs: "100%", sm: "auto" },
+        }}
+      >
+        FILTER
+      </Button>
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <div
+          style={{
+            width: "90%",
+            maxWidth: "400px", 
+            background: "lightcoral",
+            padding: "20px",
+            boxShadow: "2px 2px 10px rgba(0, 0, 0, 0.1)",
+            borderRadius: "4px",
+          }}
         >
-          FILTER
-        </Button>
-        <Modal
-          open={open}
-          onClose={handleClose}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
-        >
-          <div
-            style={{
-              position: "absolute",
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
-              background: "lightcoral",
-              padding: "20px",
-              boxShadow: "2px 2px 10px rgba(0, 0, 0, 0.1)",
-              borderRadius: "4px",
-            }}
+          <Typography
+            id="modal-modal-title"
+            variant="h6"
+            component="h2"
+            sx={{ color: "white", textAlign: "center" }}
           >
-            <Typography
-              id="modal-modal-title"
-              variant="h6"
-              component="h2"
-              sx={{ color: "white" }}
-            >
-              Assignee
-            </Typography>
-            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-              <Checkbox
-                value="Niteesh"
-                checked={tempFilter.assignee.includes("Niteesh")}
-                onChange={(e) => handleCheckboxChange(e, "assignee")}
-              />
-              Niteesh
-              <Checkbox
-                value="Surya"
-                checked={tempFilter.assignee.includes("Surya")}
-                onChange={(e) => handleCheckboxChange(e, "assignee")}
-              />
-              Surya
-              <Checkbox
-                value="Karthi"
-                checked={tempFilter.assignee.includes("Karthi")}
-                onChange={(e) => handleCheckboxChange(e, "assignee")}
-              />
-              Karthi
-            </Typography>
-            <Typography
-              id="modal-modal-title"
-              variant="h6"
-              component="h2"
-              sx={{ color: "white" }}
-            >
-              Reporter
-            </Typography>
-            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-              <Checkbox
-                value="Sasi"
-                checked={tempFilter.reporter.includes("Sasi")}
-                onChange={(e) => handleCheckboxChange(e, "reporter")}
-              />
-              Sasi
-              <Checkbox
-                value="Siva"
-                checked={tempFilter.reporter.includes("Siva")}
-                onChange={(e) => handleCheckboxChange(e, "reporter")}
-              />
-              Siva
-              <Checkbox
-                value="Rishi"
-                checked={tempFilter.reporter.includes("Rishi")}
-                onChange={(e) => handleCheckboxChange(e, "reporter")}
-              />
-              Rishi
-            </Typography>
-            <Typography
-              id="modal-modal-title"
-              variant="h6"
-              component="h2"
-              sx={{ color: "white" }}
-            >
-              Status
-            </Typography>
-            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-              <Checkbox
-                value="Backlog"
-                checked={tempFilter.status.includes("Backlog")}
-                onChange={(e) => handleCheckboxChange(e, "status")}
-              />
-              Backlog
-              <Checkbox
-                value="ToDo"
-                checked={tempFilter.status.includes("ToDo")}
-                onChange={(e) => handleCheckboxChange(e, "status")}
-              />
-              ToDo
-              <Checkbox
-                value="Inprogress"
-                checked={tempFilter.status.includes("Inprogress")}
-                onChange={(e) => handleCheckboxChange(e, "status")}
-              />
-              Inprogress
-              <Checkbox
-                value="QA"
-                checked={tempFilter.status.includes("QA")}
-                onChange={(e) => handleCheckboxChange(e, "status")}
-              />
-              QA
-              <Checkbox
-                value="Complete"
-                checked={tempFilter.status.includes("Complete")}
-                onChange={(e) => handleCheckboxChange(e, "status")}
-              />
-              Complete
-            </Typography>
-            <Button
-              sx={{
-                border: "1px solid white",
-                background: "green",
-                color: "white",
-                marginTop: "20px",
-              }}
-              onClick={handleSaveFilter}
-            >
-              Save
-            </Button>
-          </div>
-        </Modal>
-      </div>
+            Assignee
+          </Typography>
+          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+            <Checkbox
+              value="Niteesh"
+              checked={tempFilter.assignee.includes("Niteesh")}
+              onChange={(e) => handleCheckboxChange(e, "assignee")}
+            />
+            Niteesh
+            <Checkbox
+              value="Surya"
+              checked={tempFilter.assignee.includes("Surya")}
+              onChange={(e) => handleCheckboxChange(e, "assignee")}
+            />
+            Surya
+            <Checkbox
+              value="Karthi"
+              checked={tempFilter.assignee.includes("Karthi")}
+              onChange={(e) => handleCheckboxChange(e, "assignee")}
+            />
+            Karthi
+          </Typography>
+          <Typography
+            id="modal-modal-title"
+            variant="h6"
+            component="h2"
+            sx={{ color: "white", textAlign: "center", mt: 2 }}
+          >
+            Reporter
+          </Typography>
+          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+            <Checkbox
+              value="Sasi"
+              checked={tempFilter.reporter.includes("Sasi")}
+              onChange={(e) => handleCheckboxChange(e, "reporter")}
+            />
+            Sasi
+            <Checkbox
+              value="Siva"
+              checked={tempFilter.reporter.includes("Siva")}
+              onChange={(e) => handleCheckboxChange(e, "reporter")}
+            />
+            Siva
+            <Checkbox
+              value="Rishi"
+              checked={tempFilter.reporter.includes("Rishi")}
+              onChange={(e) => handleCheckboxChange(e, "reporter")}
+            />
+            Rishi
+          </Typography>
+          <Typography
+            id="modal-modal-title"
+            variant="h6"
+            component="h2"
+            sx={{ color: "white", textAlign: "center", mt: 2 }}
+          >
+            Status
+          </Typography>
+          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+            <Checkbox
+              value="Backlog"
+              checked={tempFilter.status.includes("Backlog")}
+              onChange={(e) => handleCheckboxChange(e, "status")}
+            />
+            Backlog
+            <Checkbox
+              value="ToDo"
+              checked={tempFilter.status.includes("ToDo")}
+              onChange={(e) => handleCheckboxChange(e, "status")}
+            />
+            ToDo
+            <Checkbox
+              value="Inprogress"
+              checked={tempFilter.status.includes("Inprogress")}
+              onChange={(e) => handleCheckboxChange(e, "status")}
+            />
+            Inprogress
+            <Checkbox
+              value="QA"
+              checked={tempFilter.status.includes("QA")}
+              onChange={(e) => handleCheckboxChange(e, "status")}
+            />
+            QA
+            <Checkbox
+              value="Complete"
+              checked={tempFilter.status.includes("Complete")}
+              onChange={(e) => handleCheckboxChange(e, "status")}
+            />
+            Complete
+          </Typography>
+          <Button
+            sx={{
+              border: "1px solid white",
+              background: "green",
+              color: "white",
+              marginTop: "20px",
+              width: "100%",
+            }}
+            onClick={handleSaveFilter}
+          >
+            Save
+          </Button>
+        </div>
+      </Modal>
     </div>
   );
 };
